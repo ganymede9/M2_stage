@@ -1,0 +1,26 @@
+import os
+import cv2
+import numpy as np
+import glob
+
+template_data = []
+template_file = glob.glob(r'path_to_your_templates')
+
+for craters in template_file:
+     image = cv2.imread(craters,0)
+     template_data.append(image)
+
+test_img_gray = cv2.imread(r'path_to_your_img',0)
+
+
+for tmp in template_data:
+     w, h = tmp.shape[::-1]
+     res = cv2.matchTemplate(test_img_gray, tmp, cv2.TM_CCOEFF_NORMED)
+     threshold = 0.8 #lower for more matches
+     loc = np.where(res >= threshold)
+     for pt in zip(loc[1], loc[0]):
+          cv2.circle(test_img_gray, ((pt[0] + int(w/2)),(pt[1] + int(h/2))), int(h/2), (0, 200, 0), 1)
+
+cv2.imshow('name', test_img_gray)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
